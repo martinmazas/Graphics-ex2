@@ -258,6 +258,62 @@ def initialize():
         canvas.bind('<Button-1>', my_curve(curves[cr + 1]))
 
 
+def translation_x(coord, number):
+    translated = []
+    coord[0] = int(coord[0]) + number
+    coord[2] = int(coord[2]) + number
+    translated.append(coord[0])
+    translated.append(int(coord[1]))
+    translated.append(coord[2])
+    translated.append(int(coord[3]))
+    if len(coord) == 8:
+        coord[4] = int(coord[4]) + number
+        coord[6] = int(coord[6]) + number
+        translated.append(coord[4])
+        translated.append(int(coord[5]))
+        translated.append(coord[6])
+        translated.append(int(coord[7]))
+    return translated
+
+
+def translation_y(coord, number):
+    translated = []
+    coord[1] = int(coord[1]) + number
+    coord[3] = int(coord[3]) + number
+    translated.append(int(coord[0]))
+    translated.append(coord[1])
+    translated.append(int(coord[2]))
+    translated.append(coord[3])
+    if len(coord) == 8:
+        coord[5] = int(coord[5]) + number
+        coord[7] = int(coord[7]) + number
+        translated.append(int(coord[4]))
+        translated.append(coord[5])
+        translated.append(int(coord[6]))
+        translated.append(coord[7])
+    return translated
+
+
+def trans_x(number):
+    clean()
+    for ll in range(len(lines) - 1):
+        canvas.bind('<Button-1>', my_line(translation_x(lines[ll + 1], number)))
+    for cc in range(len(circles) - 1):
+        canvas.bind('<Button-1>', my_circle(translation_x(circles[cc + 1], number)))
+    for cr in range(len(curves) - 1):
+        canvas.bind('<Button-1>', my_curve(translation_x(curves[cr + 1], number)))
+
+
+def trans_y(number):
+    clean()
+    for ll in range(len(lines) - 1):
+        canvas.bind('<Button-1>', my_line(translation_y(lines[ll + 1], number)))
+    for cc in range(len(circles) - 1):
+        canvas.bind('<Button-1>', my_circle(translation_y(circles[cc + 1], number)))
+    for cr in range(len(curves) - 1):
+        canvas.bind('<Button-1>', my_curve(translation_y(curves[cr + 1], number)))
+
+
 def main():
     initialize()
     file_name_entry.place(x=100)
@@ -271,6 +327,14 @@ def main():
     rot_y_btn = Button(window, text="RotateY", command=rot_y)
     rot_y_btn.grid(row=0, column=1)
     rot_y_btn.place(x=400)
+    trans_x_plus_btn = Button(window, text='Right', command=lambda: trans_x(20))
+    trans_x_minus_btn = Button(window, text='Left', command=lambda: trans_x(-20))
+    trans_y_plus_btn = Button(window, text='Down', command=lambda: trans_y(20))
+    trans_y_minus_btn = Button(window, text='Up', command=lambda: trans_y(-20))
+    trans_x_plus_btn.place(x=620)
+    trans_x_minus_btn.place(x=670)
+    trans_y_plus_btn.place(x=720)
+    trans_y_minus_btn.place(x=770)
     window.mainloop()
 
 
