@@ -21,6 +21,7 @@ with open(file_name) as coordinates:
 lines = []
 circles = []
 curves = []
+x = y = 0
 
 
 # Draw a single pixel
@@ -314,27 +315,77 @@ def trans_y(number):
         canvas.bind('<Button-1>', my_curve(translation_y(curves[cr + 1], number)))
 
 
+def click_event(event):
+    global x, y
+    x = event.x
+    y = event.y
+    return [x, y]
+
+
+def scaling():
+    canvas.bind("<Button-1>", click_event)
+    clean()
+    for ll in range(len(lines) - 1):
+        canvas.bind('<Button-1>', my_line(pic_scale(lines[ll + 1])))
+    for cc in range(len(circles) - 1):
+        canvas.bind('<Button-1>', my_circle(pic_scale(circles[cc + 1])))
+    for cr in range(len(curves) - 1):
+        canvas.bind('<Button-1>', my_curve(pic_scale(curves[cr + 1])))
+
+
+def pic_scale(coord):
+    global x, y
+    translated = []
+    coord[0] = int(coord[0]) - x
+    coord[1] = int(coord[1]) - y
+    coord[2] = int(coord[2]) - x
+    coord[3] = int(coord[3]) - y
+
+    translated.append(coord[0])
+    translated.append(coord[1])
+    translated.append(coord[2])
+    translated.append(coord[3])
+    if len(coord) == 8:
+        coord[4] = int(coord[4]) - x
+        coord[5] = int(coord[5]) - y
+        coord[6] = int(coord[6]) - x
+        coord[7] = int(coord[7]) - y
+        translated.append(coord[4])
+        translated.append(coord[5])
+        translated.append(coord[6])
+        translated.append(coord[7])
+    return translated
+
+
 def main():
+    # load the file
     initialize()
+    # Choose the file to see
     file_name_entry.place(x=100)
     select_file_btn = Button(window, text="Select", command=select_file)
-    select_file_btn.place(x=300)
+    select_file_btn.place(x=220)
+    # Clean the board
     clean_btn = Button(window, text="Clean", command=clean)
     clean_btn.place(x=50)
+    # Rotation buttons
     rot_x_btn = Button(window, text="RotateX", command=rot_x)
     rot_x_btn.grid(row=0, column=1)
-    rot_x_btn.place(x=550)
+    rot_x_btn.place(x=370)
     rot_y_btn = Button(window, text="RotateY", command=rot_y)
     rot_y_btn.grid(row=0, column=1)
-    rot_y_btn.place(x=400)
+    rot_y_btn.place(x=300)
+    # Translation buttons
     trans_x_plus_btn = Button(window, text='Right', command=lambda: trans_x(20))
     trans_x_minus_btn = Button(window, text='Left', command=lambda: trans_x(-20))
     trans_y_plus_btn = Button(window, text='Down', command=lambda: trans_y(20))
     trans_y_minus_btn = Button(window, text='Up', command=lambda: trans_y(-20))
-    trans_x_plus_btn.place(x=620)
-    trans_x_minus_btn.place(x=670)
-    trans_y_plus_btn.place(x=720)
-    trans_y_minus_btn.place(x=770)
+    trans_x_plus_btn.place(x=100, y=70)
+    trans_x_minus_btn.place(x=200, y=70)
+    trans_y_plus_btn.place(x=300, y=70)
+    trans_y_minus_btn.place(x=400, y=70)
+    # Scaling buttons
+    scale_btn = Button(window, text='Scale', command=scaling)
+    scale_btn.place(x=500)
     window.mainloop()
 
 
