@@ -259,6 +259,7 @@ def initialize():
         canvas.bind('<Button-1>', my_curve(curves[cr + 1]))
 
 
+#Moves the painting 20 pixels right or left.
 def translation_x(coord, number):
     translated = []
     coord[0] = int(coord[0]) + number
@@ -276,7 +277,7 @@ def translation_x(coord, number):
         translated.append(int(coord[7]))
     return translated
 
-
+#Moves the painting 20 pixels up or down.
 def translation_y(coord, number):
     translated = []
     coord[1] = int(coord[1]) + number
@@ -294,6 +295,7 @@ def translation_y(coord, number):
         translated.append(coord[7])
     return translated
 
+#Call to translation_x function with lines, curves and circles seperayly
 
 def trans_x(number):
     clean()
@@ -304,7 +306,7 @@ def trans_x(number):
     for cr in range(len(curves) - 1):
         canvas.bind('<Button-1>', my_curve(translation_x(curves[cr + 1], number)))
 
-
+#Call to translation_y function with lines, curves and circles seperayly
 def trans_y(number):
     clean()
     for ll in range(len(lines) - 1):
@@ -314,27 +316,44 @@ def trans_y(number):
     for cr in range(len(curves) - 1):
         canvas.bind('<Button-1>', my_curve(translation_y(curves[cr + 1], number)))
 
-
+#Returns the position (x,y) of a mouse click.
 def click_event(event):
     global x, y
+    print(x,y)
     x = event.x
     y = event.y
-    return [x, y]
 
-
+#Function who calls the pic_scale function with lines, curves and circles seperatly.
 def scaling():
-    canvas.bind("<Button-1>", click_event)
+    global x, y
+    # canvas.bind("<Button-1>", click_event)
     clean()
     for ll in range(len(lines) - 1):
-        canvas.bind('<Button-1>', my_line(pic_scale(lines[ll + 1])))
+        canvas.bind('<Button-1>', my_line(pic_scale(lines[ll + 1], x, y)))
     for cc in range(len(circles) - 1):
-        canvas.bind('<Button-1>', my_circle(pic_scale(circles[cc + 1])))
+        canvas.bind('<Button-1>', my_circle(pic_scale(circles[cc + 1], x, y)))
     for cr in range(len(curves) - 1):
-        canvas.bind('<Button-1>', my_curve(pic_scale(curves[cr + 1])))
+        canvas.bind('<Button-1>', my_curve(pic_scale(curves[cr + 1], x, y)))
 
+#Increase the size of the painting by 2 and than moves it back to the center of the canvas.
+def size_increase(translated):
+    print(translated)
+    translated[0] = translated[0] * 2 + 500
+    translated[1] = translated[1] * 2 + 500
+    translated[2] = translated[2] * 2 + 500
+    translated[3] = translated[3] * 2 + 500
+    if len(translated) == 8:
+        translated[4] = translated[4] * 2 + 500
+        translated[5] = translated[5] * 2 + 500
+        translated[6] = translated[6] * 2 + 500
+        translated[7] = translated[7] * 2 + 500
+    print(translated)
+    print("------------------")
+    return translated
 
-def pic_scale(coord):
-    global x, y
+#turns a specific point on the screen to the center (0,0) before scaling the canvas.
+def pic_scale(coord, x, y):
+    # global x, y
     translated = []
     coord[0] = int(coord[0]) - x
     coord[1] = int(coord[1]) - y
@@ -354,10 +373,13 @@ def pic_scale(coord):
         translated.append(coord[5])
         translated.append(coord[6])
         translated.append(coord[7])
+
+    size_increase(translated)
     return translated
 
 
 def main():
+    canvas.bind("<Button-1>", click_event)
     # load the file
     initialize()
     # Choose the file to see
