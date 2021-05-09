@@ -400,16 +400,6 @@ def pic_scale_minus(coord, x, y):
     return scaled
 
 
-def shearing():
-    clean()
-    for ll in range(len(lines) - 1):
-        canvas.bind('<Button-1>', my_line(pic_scale_minus(lines[ll + 1], x, y)))
-    for cc in range(len(circles) - 1):
-        canvas.bind('<Button-1>', my_circle(pic_scale_minus(circles[cc + 1], x, y)))
-    for cr in range(len(curves) - 1):
-        canvas.bind('<Button-1>', my_curve(pic_scale_minus(curves[cr + 1], x, y)))
-
-
 def main():
     canvas.bind("<Button-1>", click_event)
     # load the file
@@ -442,8 +432,6 @@ def main():
     scale_plus_btn.place(x=500)
     scale_minus_btn = Button(window, text='Scale-', command=scaling_minus)
     scale_minus_btn.place(x=600)
-    shearing_btn = Button(window, text='Shearing', command=shearing)
-    shearing_btn.place(x=700)
     window.mainloop()
 
 
