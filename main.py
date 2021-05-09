@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Ex2
 # Niv Swisa 307929257, Martin Mazas 329834857, Yarin Mizrahi 205663917
 
@@ -165,7 +164,8 @@ def rotation_x(coord):
         rotated.append(int(coord[7]))
     return rotated
 
-#This func rotate the painting on the x axis
+
+# This func rotate the painting on the x axis
 def rotation_y(coord):
     rotated = []
     coord[1] = int(coord[1])*(-1) + 800
@@ -335,8 +335,6 @@ def click_event(event):
     y = event.y
 
 
-
-
 # Function who calls the pic_scale function with lines, curves and circles separately.
 def scaling_plus():
     global x, y
@@ -350,6 +348,7 @@ def scaling_plus():
         canvas.bind('<Button-1>', my_curve(pic_scale(curves[cr + 1], x, y)))
 
 
+# Function who calls the pic_scale function with lines, curves and circles separately.
 def scaling_minus():
     global x, y
     # canvas.bind("<Button-1>", click_event)
