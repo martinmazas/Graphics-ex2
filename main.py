@@ -4,14 +4,13 @@
 
 import math
 from tkinter import *
-from pynput import mouse
 
 file_name = 'coordinates.txt'
 height = width = 1000
 window = Tk()
 window.title("Ex 2")
 window.geometry("1000x1000")
-canvas = Canvas(window, width=width, height=height, bg='black')
+canvas = Canvas(window, width=width, height=height, bg='white')
 img = PhotoImage(width=width, height=height)
 canvas.create_image((width // 2, height // 2), image=img, state="normal")
 file_name_entry = Entry(window, width=10)
@@ -32,7 +31,7 @@ def draw_pixel(x, y):
     # Check that the point is on the window
     if x < 0 or y < 0:
         return
-    img.put("#fff", (x, y))
+    img.put("#000", (x, y))
 
 
 def my_line(lines_coord):
@@ -139,6 +138,15 @@ def my_curve(curves_coord):
     my_line([xt, yt, xx3, yy3])
 
 
+# This func cleans the screen
+def clean():
+    global img, lines, circles, curves
+    canvas.delete(img)
+    img = PhotoImage(width=width, height=height)
+    canvas.create_image((width // 2, height // 2), image=img, state="normal")
+
+
+# This func rotate the painting on the x axis
 def rotation_x(coord):
     rotated = []
     coord[0] = int(coord[0])*(-1) + 1000
@@ -157,7 +165,7 @@ def rotation_x(coord):
         rotated.append(int(coord[7]))
     return rotated
 
-
+#This func rotate the painting on the x axis
 def rotation_y(coord):
     rotated = []
     coord[1] = int(coord[1])*(-1) + 800
@@ -176,13 +184,7 @@ def rotation_y(coord):
     return rotated
 
 
-def clean():
-    global img, lines, circles, curves
-    canvas.delete(img)
-    img = PhotoImage(width=width, height=height)
-    canvas.create_image((width // 2, height // 2), image=img, state="normal")
-
-
+# This func sends the lines,curves and circles seperetaly to the rotation function.
 def rot_x():
     clean()
     for ll in range(len(lines) - 1):
@@ -193,6 +195,7 @@ def rot_x():
         canvas.bind('<Button-1>', my_curve(rotation_x(curves[cr + 1])))
 
 
+# This func sends the lines,curves and circles seperetaly to the rotation function.
 def rot_y():
     clean()
     for ll in range(len(lines) - 1):
@@ -203,13 +206,16 @@ def rot_y():
         canvas.bind('<Button-1>', my_curve(rotation_y(curves[cr + 1])))
 
 
+# By entering a file name it runs the coordinates.
 def select_file():
     global file_name_entry, file_name
     file_name = file_name_entry.get()
     initialize()
 
 
+# This func runs the initial painting.
 def initialize():
+    clean()
     global data, lines, circles, curves, coordinates, fileLines
     with open(file_name) as coordinates:
         data = coordinates
@@ -329,9 +335,6 @@ def click_event(event):
     y = event.y
 
 
-# def release_event(event):
-#     global xR
-#     xR = event.x
 
 
 # Function who calls the pic_scale function with lines, curves and circles separately.
@@ -359,7 +362,7 @@ def scaling_minus():
         canvas.bind('<Button-1>', my_curve(pic_scale_minus(curves[cr + 1], x, y)))
 
 
-# turns a specific point on the screen to the center (0,0) before scaling the canvas.
+# This func used to scale the painting by performing three actions. (translation, scaling and translation again)
 def pic_scale(coord, x, y):
     # global x, y
     scaled = []
@@ -384,6 +387,7 @@ def pic_scale(coord, x, y):
     return scaled
 
 
+# turns a specific point on the screen to the center (0,0) before scaling the canvas.
 def pic_scale_minus(coord, x, y):
     scaled = []
     coord[0] = (int(coord[0]) - x) / 2 + 500
@@ -407,90 +411,21 @@ def pic_scale_minus(coord, x, y):
     return scaled
 
 
-def find_max_y():
-    global max_y
-    for ll in range(len(lines) - 1):
-        if int(lines[ll + 1][1]) > max_y:
-            max_y = int(lines[ll + 1][1])
-        if int(lines[ll + 1][3]) > max_y:
-            max_y = int(lines[ll + 1][3])
-    for cc in range(len(circles) - 1):
-        if int(circles[cc + 1][1]) > max_y:
-            max_y = int(circles[cc + 1][1])
-        if int(circles[cc + 1][3]) > max_y:
-            max_y = int(circles[cc + 1][3])
-    for cr in range(len(curves) - 1):
-        if int(curves[cr + 1][1]) > max_y:
-            max_y = int(curves[cr + 1][1])
-        if int(curves[cr + 1][3]) > max_y:
-            max_y = int(curves[cr + 1][3])
-    return max_y
-
-
-def calc_dist():
-    global x, xR
-    x_start = x
-    x_end = xR
-    print(xR-x)
-
-    return x_end-x_start
-
-
-def shearing():
-    global max_y
-    # canvas.bind("<Button-1>", click_event)
-    # canvas.bind("<ButtonRelease-1>", release_event)
-    max_y = find_max_y()
-    dist = calc_dist()
-    if dist != 0:
-        clean()
-        for ll in range(len(lines) - 1):
-            # if lines[ll + 1][1] == max_y or lines[ll + 1][3] == max_y:
-            canvas.bind('<Button-1>', my_line(shear(lines[ll + 1])))
-        for cc in range(len(circles) - 1):
-            # if circles[cc + 1][1] == max_y or circles[cc + 1][3] == max_y:
-            canvas.bind('<Button-1>', my_circle(shear(circles[cc + 1])))
-        # for cr in range(len(curves) - 1):
-        #     if curves[cr + 1][1] == max_y or curves[cr+ 1][3] == max_y:
-        #         shear(curves[cr + 1])
-                # canvas.bind('<Button-1>', my_curve(shear(curves[cr + 1])))
-
-
-def shear(coord):
-    global max_y
-    sheared = []
-    if int(coord[1]) == max_y and int(coord[3]) == max_y:
-        pass
-    elif int(coord[1]) == max_y:
-        coord[2] = int(coord[2]) + 100
-    elif int(coord[3]) == max_y:
-        coord[0] = int(coord[0]) + 100
-    else:
-        coord[0] = int(coord[0]) + 100
-        coord[2] = int(coord[2]) + 100
-    sheared.append(coord[0])
-    sheared.append(coord[1])
-    sheared.append(coord[2])
-    sheared.append(coord[3])
-    return sheared
-
-
 def main():
     canvas.bind("<Button-1>", click_event)
-    # canvas.bind("<ButtonRelease-1>", release_event)
     # load the file
     initialize()
     # Choose the file to see
     file_name_entry.place(x=100)
-    select_file_btn = Button(window, text="Select", command=select_file)
+    select_file_btn = Button(window, text="Select file", command=select_file)
     select_file_btn.place(x=220)
     # Clean the board
-    clean_btn = Button(window, text="Clean", command=clean)
-    clean_btn.place(x=50)
+    clean_btn = Button(window, text="Clean Board", command=clean)
+    clean_btn.place(x=0)
     # Rotation buttons
     rot_x_btn = Button(window, text="RotateX", command=rot_x)
     rot_x_btn.grid(row=0, column=1)
-    rot_x_btn.place(x=370)
+    rot_x_btn.place(x=360)
     rot_y_btn = Button(window, text="RotateY", command=rot_y)
     rot_y_btn.grid(row=0, column=1)
     rot_y_btn.place(x=300)
@@ -499,17 +434,17 @@ def main():
     trans_x_minus_btn = Button(window, text='Left', command=lambda: trans_x(-20))
     trans_y_plus_btn = Button(window, text='Down', command=lambda: trans_y(20))
     trans_y_minus_btn = Button(window, text='Up', command=lambda: trans_y(-20))
-    trans_x_plus_btn.place(x=200, y=70)
-    trans_x_minus_btn.place(x=100, y=70)
-    trans_y_plus_btn.place(x=400, y=70)
-    trans_y_minus_btn.place(x=300, y=70)
+    trans_x_plus_btn.place(x=750, y=20)
+    trans_x_minus_btn.place(x=650, y=20)
+    trans_y_plus_btn.place(x=700, y=40)
+    trans_y_minus_btn.place(x=710)
     # Scaling buttons
     scale_plus_btn = Button(window, text='Scale+', command=scaling_plus)
-    scale_plus_btn.place(x=500)
+    scale_plus_btn.place(x=480)
     scale_minus_btn = Button(window, text='Scale-', command=scaling_minus)
-    scale_minus_btn.place(x=600)
-    shearing_btn = Button(window, text='Shearing', command=shearing)
-    shearing_btn.place(x=700)
+    scale_minus_btn.place(x=430)
+    reset_btn = Button(window, text='Reset', command=initialize)
+    reset_btn.place(x= 800)
     window.mainloop()
 
 
